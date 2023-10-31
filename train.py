@@ -36,11 +36,11 @@ def get_params():
     # model
     parser.add_argument("--epsilon_theta", type=str, default='UGnet')
     parser.add_argument("--hidden_size", type=int, default=32)
-    parser.add_argument("--N", type=int, default=100)
+    parser.add_argument("--N", type=int, default=200)
     parser.add_argument("--beta_schedule", type=str, default='quad')  # uniform, quad
-    parser.add_argument("--beta_end", type=float, default=0.4)
-    parser.add_argument("--sample_steps", type=int, default=50)  # sample_steps
-    parser.add_argument("--ss", type=str, default='ddim_multi') #help='sample strategy', ddpm, multi_diffusion, one_diffusion
+    parser.add_argument("--beta_end", type=float, default=0.1)
+    parser.add_argument("--sample_steps", type=int, default=200)  # sample_steps
+    parser.add_argument("--ss", type=str, default='ddpm') #help='sample strategy', ddpm, multi_diffusion, one_diffusion
     parser.add_argument("--T_h", type=int, default=12)
 
     # eval
@@ -48,7 +48,7 @@ def get_params():
 
     # train
     parser.add_argument("--is_train", type=bool, default=True) # train or evaluate
-    parser.add_argument("--data", type=str, default='AIR_GZ')
+    parser.add_argument("--data", type=str, default='PEMS08')
     parser.add_argument("--mask_ratio", type=float, default=0.0) # mask of history data
     parser.add_argument("--is_test", type=bool, default=True)
     parser.add_argument("--nni", type=bool, default=False)
@@ -94,7 +94,6 @@ def default_config(data='AIR_BJ'):
         config.data.val_start_idx = int(8760 * 10 / 12) #
         config.data.test_start_idx = int(8160 * 11 / 12)
 
-
     gpu_id = GPU().get_usefuel_gpu(max_memory=6000, condidate_gpu_id=[0,1,2,3,4,6,7,8])
     config.gpu_id = gpu_id
     if gpu_id != None:
@@ -115,8 +114,8 @@ def default_config(data='AIR_BJ'):
     config.model.d_h = 32
 
     # config for diffusion model
-    config.model.N = 2
-    config.model.sample_steps = 50
+    config.model.N = 200
+    config.model.sample_steps = 200
     config.model.epsilon_theta = 'UGnet'
     config.model.is_label_condition = True
     config.model.beta_end = 0.02
@@ -442,6 +441,9 @@ def main(params: dict):
 
     nni.report_final_result(min(metric_lst))
 
+
+# data.name	model	model.N	model.epsilon_theta	model.d_h	model.T_h	model.T_p	model.sample_strategy
+# PEMS08	UGnet	200	    UGnet	            32	        12	        12	        ddpm
 
 if __name__ == '__main__':
 
